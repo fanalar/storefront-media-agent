@@ -1,0 +1,29 @@
+name: Community source checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prepare video tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk
+      - name: Install frontend dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: src/frontend
+      - name: Build interface
+        run: npm run build
+        working-directory: src/frontend
+      - name: Install test dependencies
+        run: python -m pip install -r src/backend/requirements-dev.txt
+      - name: Run API and actual video composition tests
+        run: python -m pytest -q
+      - name: Check Electron syntax
+        run: node --check src/electron/main.js
