@@ -1,0 +1,65 @@
+{
+  "name": "storefront-media-agent-desktop",
+  "version": "0.2.0-community.1",
+  "private": true,
+  "description": "Local video workflow for small businesses: plan, compose, batch and prepare posts.",
+  "main": "src/electron/main.js",
+  "scripts": {
+    "install:all": "npm install --prefix src/frontend",
+    "dev": "concurrently -k \"npm run dev --prefix src/frontend\" \"wait-on http://127.0.0.1:5173 && electron .\"",
+    "build:renderer": "npm run build --prefix src/frontend",
+    "dist": "npm run build:renderer && electron-builder --win nsis",
+    "check": "npm run build:renderer"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "electron": "43.2.0",
+    "electron-builder": "26.15.3",
+    "wait-on": "^9.0.1"
+  },
+  "build": {
+    "appId": "cn.storefront.mediaagent.community",
+    "productName": "实体店新媒体AI智能体社区版",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/electron/**/*",
+      "src/frontend/dist/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": ".build/backend",
+        "to": "backend"
+      },
+      {
+        "from": ".build/ffmpeg",
+        "to": "ffmpeg"
+      },
+      {
+        "from": "assets",
+        "to": "assets"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/app-icon.ico",
+      "artifactName": "实体店新媒体AI智能体社区版-${version}-安装程序.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "实体店新媒体AI智能体社区版",
+      "installerLanguages": [
+        "zh_CN"
+      ]
+    }
+  },
+  "license": "MIT"
+}
